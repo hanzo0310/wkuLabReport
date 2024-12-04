@@ -2,6 +2,14 @@
 
 #include "var.h"
 
+void GotoXY(int x, int y) {
+    COORD pos;
+    pos.X = 2 * x;
+    pos.Y = y;
+
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
 void setColor(int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
@@ -9,36 +17,15 @@ void setColor(int color) {
 
 // 강조된 좌표가 포함된 바둑판 출력
 void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int turn) {
-    system("cls"); // 콘솔 화면 지우기
-
-    // 오목판 설명 출력
-    printf("오목 게임\n\n");
-    printf("파란색 : 선공\n");
-    printf("빨간색 : 후공\n\n");
-    printf("조작법:\n");
-    printf("  W / 윗 방향키 - 위로 이동\n");
-    printf("  A / 왼 방향키 - 왼쪽 이동\n");
-    printf("  S / 아랫 방향키 - 아래로 이동\n");
-    printf("  D / 오른 방향키 - 오른쪽 이동\n");
-    printf("  Space - 돌 놓기\n\n");
-
-    // 현재 턴 표시
-    setColor(turn == 0 ? 9 : 12); // 파란색: 9, 빨간색: 12
-    printf("%s색의 턴입니다!\n", turn == 0 ? "파란" : "빨간");
-    setColor(7); // 기본 색상 복원
-
-    printf("\n   ");
-    for (char c = 'A'; c < 'A' + SIZE; c++) {
-        printf("%c ", c);
-    }
-    printf("\n");
+    system("cls"); // 화면 초기화
 
     // 바둑판 출력
     for (int i = 0; i < SIZE; i++) {
-        printf("%2d ", i + 1);
+        GotoXY(0, i);
+        printf("%2d ", i + 1); // 세로 번호 출력
         for (int j = 0; j < SIZE; j++) {
-            if (i == highlightPos[0] && j == highlightPos[1]) { // 선택된 좌표
-                setColor(14); // 노란색
+            if (i == highlightPos[0] && j == highlightPos[1]) {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); // 노란색
                 if (board[i][j] == 1) {
                     printf("●");
                 }
@@ -49,24 +36,41 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
                     printf("■");
                 }
             }
-            else { // 일반 좌표
+            else {
                 if (board[i][j] == 1) {
-                    setColor(9); // 파란색
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9); // 파란색
                     printf("●");
                 }
                 else if (board[i][j] == 2) {
-                    setColor(12); // 빨간색
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); // 빨간색
                     printf("●");
                 }
                 else {
-                    setColor(15); // 흰색
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15); // 흰색
                     printf("■");
                 }
             }
         }
-        printf("\n");
     }
-    setColor(7); // 기본 콘솔 색상 복원
+
+    // 안내 문 출력 위치로 이동
+    int infoX = SIZE + 3; // 바둑판 오른쪽의 x 좌표 (2배 확대 + 여백)
+    int infoY = 0; // 바둑판 위쪽 y 좌표
+
+    // 안내 문 출력
+    GotoXY(infoX, infoY);
+    printf("오목 게임\n");
+
+    GotoXY(infoX, infoY + 2);
+    printf("파란색 : 선공\n");
+
+    GotoXY(infoX, infoY + 3);
+    printf("빨간색 : 후공\n");
+
+    GotoXY(infoX, infoY + 5);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), turn == 0 ? 9 : 12);
+    printf("%s색의 턴입니다!\n", turn == 0 ? "파란" : "빨간");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // 기본 색상 복원
 }
 
 // 게임 종료 화면 출력
