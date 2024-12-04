@@ -8,7 +8,7 @@ void setColor(int color) {
 }
 
 // 강조된 좌표가 포함된 바둑판 출력
-void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int turn) {
+void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int turn, int mode) {
     system("cls"); // 콘솔 화면 지우기
 
     // 오목판 설명 출력
