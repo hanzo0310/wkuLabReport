@@ -18,4 +18,31 @@ int countStones(int board[SIZE][SIZE], int row, int col, int dRow, int dCol, int
     return count;
 }
 
+int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player) {
+    int directions[4][2] = {
+        {0, 1},  // 가로
+        {1, 0},  // 세로
+        {1, 1},  // 대각선 (\)
+        {1, -1}  // 대각선 (/)
+    };
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == 0) { // 빈 칸만 확인
+                for (int d = 0; d < 4; d++) {
+                    int count = countStones(board, i, j, directions[d][0], directions[d][1], player) +
+                        countStones(board, i, j, -directions[d][0], -directions[d][1], player);
+
+                    if (count >= 4) { // 승리 또는 방어 가능
+                        *bestRow = i;
+                        *bestCol = j;
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 
