@@ -20,16 +20,16 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
     system("cls"); // 화면 초기화
 
     // 바둑판 출력
-    GotoXY(0, 0);
-    printf("   ");
+    GotoXY(1, 0);
+    printf(" ");
     for (char c = 'A'; c < 'A' + SIZE; c++) {
-        printf("%c ", c); // 열 번호로 알파벳 출력
+        printf("%c ", c); // 열 번호 출력
     }
     printf("\n");
 
     for (int i = 0; i < SIZE; i++) {
         GotoXY(0, i + 1);
-        printf("%2d ", i + 1); // 행 번호로 숫자 출력
+        printf("%2d ", i + 1); // 행 번호 출력
         for (int j = 0; j < SIZE; j++) {
             if (i == highlightPos[0] && j == highlightPos[1]) {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); // 노란색
@@ -61,7 +61,7 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
     }
 
     // 안내문 출력 위치로 이동
-    int infoX = SIZE + 3; // 바둑판 오른쪽의 x 좌표 (2배 확대 + 여백)
+    int infoX = SIZE * 2 + 3; // 바둑판 오른쪽의 x 좌표 (2배 확대 + 여백)
     int infoY = 0; // 바둑판 위쪽 y 좌표
 
     // 안내문 출력
@@ -95,8 +95,12 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
     // 현재 턴 출력
     GotoXY(infoX, infoY + 12);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), turn == 0 ? 9 : 12); // 파란색 또는 빨간색
-    printf("%s색의 턴입니다!\n", turn == 0 ? "파란" : "빨간");
+    printf("%s색의 턴입니다!", turn == 0 ? "파란" : "빨간");
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // 기본 색상 복원
+
+    // 선택된 좌표 출력
+    GotoXY(infoX, infoY + 14);
+    printf("현재 선택된 위치: %c%d", 'A' + highlightPos[1], highlightPos[0] + 1);
 }
 
 // 게임 종료 화면 출력
