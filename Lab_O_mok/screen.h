@@ -16,10 +16,10 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
     printf("파란색 : 선공\n");
     printf("빨간색 : 후공\n\n");
     printf("조작법:\n");
-    printf("  W - 위로 이동\n");
-    printf("  A - 왼쪽 이동\n");
-    printf("  S - 아래로 이동\n");
-    printf("  D - 오른쪽 이동\n");
+    printf("  W / 윗 방향키 - 위로 이동\n");
+    printf("  A / 왼 방향키 - 왼쪽 이동\n");
+    printf("  S / 아랫 방향키 - 아래로 이동\n");
+    printf("  D / 오른 방향키 - 오른쪽 이동\n");
     printf("  Space - 돌 놓기\n\n");
 
     // 현재 턴 표시

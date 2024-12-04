@@ -22,6 +22,18 @@ void main() {
             case 's': // 아래로 이동
                 if (highlightPos[0] < SIZE - 1) highlightPos[0]++;
                 break;
+            case 75: // 왼쪽 방향키
+                if (highlightPos[1] > 0) highlightPos[1]--; // 열 감소
+                break;
+            case 77: // 오른쪽 방향키
+                if (highlightPos[1] < SIZE - 1) highlightPos[1]++; // 열 증가
+                break;
+            case 72: // 위쪽 방향키
+                if (highlightPos[0] > 0) highlightPos[0]--; // 행 감소
+                break;
+            case 80: // 아래쪽 방향키
+                if (highlightPos[0] < SIZE - 1) highlightPos[0]++; // 행 증가
+                break;
             case 32: { // 스페이스바 입력
                 int row = highlightPos[0];
                 int col = highlightPos[1];
