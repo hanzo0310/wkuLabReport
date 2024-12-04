@@ -2,36 +2,67 @@
 #include "rules.h"
 #include "screen.h"
 #include "AI.h"
+#include "selectMode.h"
 
 int main() {
-    int board[SIZE][SIZE] = { 0 }; // 바둑판 초기화
-    int highlightPos[2] = { 0, 0 }; // 커서 초기 위치
-    int turn = 0; // 0: 플레이어 1, 1: AI
-    int lastPlayerRow = -1, lastPlayerCol = -1; // 플레이어가 마지막으로 둔 위치
-    int aiFirstMove = 1; // AI의 첫 번째 수 상태
 
     srand((unsigned int)time(NULL)); // 난수 초기화
+    int mode = selectMode(); // 게임 모드 선택
+
+
 
     while (1) {
-        printBoardWithHighlight(board, highlightPos, turn);
+        printBoardWithHighlight(board, highlightPos, turn, mode);
 
-        if (turn == 0) { // 플레이어의 턴
+        if (mode == 1 && turn == 1) { // AI의 턴
+            int row, col;
+            aiTurn(board, &row, &col, aiFirstMove, lastPlayerRow, lastPlayerCol);
+            aiFirstMove = 0;
+            board[row][col] = 2; // AI의 돌
+            int winner = checkWin(board, row, col);
+            if (winner) {
+                printBoardWithHighlight(board, highlightPos, turn, mode);
+                printf("AI가 승리했습니다!\n");
+                printf("다시 시작하려면 스페이스바를 누르세요.\n");
+                while (1) {
+                    if (_kbhit() && _getch() == 32) {
+                        resetGame(board, highlightPos, &turn);
+                        break;
+                    }
+                }
+                continue;
+            }
+            if (checkDraw(board)) {
+                printBoardWithHighlight(board, highlightPos, turn, mode);
+                printf("무승부입니다!\n");
+                printf("다시 시작하려면 스페이스바를 누르세요.\n");
+                while (1) {
+                    if (_kbhit() && _getch() == 32) {
+                        resetGame(board, highlightPos, &turn);
+                        break;
+                    }
+                }
+                continue;
+            }
+            turn = 0; // 플레이어의 턴
+        }
+        else { // 플레이어의 턴
             if (_kbhit()) {
                 int key = _getch();
 
                 if (key == 224) {
                     key = _getch();
                     switch (key) {
-                    case 75: // 왼쪽 방향키
+                    case 75: // 왼쪽
                         if (highlightPos[1] > 0) highlightPos[1]--;
                         break;
-                    case 77: // 오른쪽 방향키
+                    case 77: // 오른쪽
                         if (highlightPos[1] < SIZE - 1) highlightPos[1]++;
                         break;
-                    case 72: // 위쪽 방향키
+                    case 72: // 위쪽
                         if (highlightPos[0] > 0) highlightPos[0]--;
                         break;
-                    case 80: // 아래쪽 방향키
+                    case 80: // 아래쪽
                         if (highlightPos[0] < SIZE - 1) highlightPos[0]++;
                         break;
                     }
@@ -54,13 +85,13 @@ int main() {
                         int row = highlightPos[0];
                         int col = highlightPos[1];
                         if (board[row][col] == 0) {
-                            board[row][col] = 1; // 플레이어의 돌
+                            board[row][col] = turn == 0 ? 1 : 2;
                             lastPlayerRow = row;
                             lastPlayerCol = col;
                             int winner = checkWin(board, row, col);
                             if (winner) {
-                                printBoardWithHighlight(board, highlightPos, turn);
-                                printf("플레이어가 승리했습니다!\n");
+                                printBoardWithHighlight(board, highlightPos, turn, mode);
+                                printf("플레이어 %d가 승리했습니다!\n", turn == 0 ? 1 : 2);
                                 printf("다시 시작하려면 스페이스바를 누르세요.\n");
                                 while (1) {
                                     if (_kbhit() && _getch() == 32) {
@@ -71,7 +102,7 @@ int main() {
                                 continue;
                             }
                             if (checkDraw(board)) {
-                                printBoardWithHighlight(board, highlightPos, turn);
+                                printBoardWithHighlight(board, highlightPos, turn, mode);
                                 printf("무승부입니다!\n");
                                 printf("다시 시작하려면 스페이스바를 누르세요.\n");
                                 while (1) {
@@ -82,7 +113,7 @@ int main() {
                                 }
                                 continue;
                             }
-                            turn = 1; // AI의 턴
+                            turn = 1 - turn; // 턴 전환
                         }
                         break;
                     }
@@ -90,39 +121,5 @@ int main() {
                 }
             }
         }
-        else { // AI의 턴
-            int row, col;
-            aiTurn(board, &row, &col, aiFirstMove, lastPlayerRow, lastPlayerCol);
-            aiFirstMove = 0; // 첫 수 이후 일반 로직
-            board[row][col] = 2; // AI의 돌
-            int winner = checkWin(board, row, col);
-            if (winner) {
-                printBoardWithHighlight(board, highlightPos, turn);
-                printf("AI가 승리했습니다!\n");
-                printf("다시 시작하려면 스페이스바를 누르세요.\n");
-                while (1) {
-                    if (_kbhit() && _getch() == 32) {
-                        resetGame(board, highlightPos, &turn);
-                        break;
-                    }
-                }
-                continue;
-            }
-            if (checkDraw(board)) {
-                printBoardWithHighlight(board, highlightPos, turn);
-                printf("무승부입니다!\n");
-                printf("다시 시작하려면 스페이스바를 누르세요.\n");
-                while (1) {
-                    if (_kbhit() && _getch() == 32) {
-                        resetGame(board, highlightPos, &turn);
-                        break;
-                    }
-                }
-                continue;
-            }
-            turn = 0; // 플레이어의 턴
-        }
     }
-
-    return 0;
 }
