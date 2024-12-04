@@ -8,11 +8,8 @@ void setColor(int color) {
 }
 
 // 강조된 좌표가 포함된 바둑판 출력
-<<<<<<< HEAD
 
 // 강조된 좌표가 포함된 바둑판 출력
-=======
->>>>>>> master
 void GotoXY(int x, int y) {
     COORD pos;
     pos.X = 2 * x; // 가로 좌표는 2배로 확대하여 출력
@@ -66,11 +63,7 @@ void printBoardWithHighlight(int board[SIZE][SIZE], int highlightPos[2], int tur
     }
 
     // 안내문 출력 위치로 이동
-<<<<<<< HEAD
     int infoX = SIZE  + 3; // 바둑판 오른쪽의 x 좌표 (2배 확대 + 여백)
-=======
-    int infoX = SIZE * 2 + 3; // 바둑판 오른쪽의 x 좌표 (2배 확대 + 여백)
->>>>>>> master
     int infoY = 0; // 바둑판 위쪽 y 좌표
 
     // 안내문 출력
