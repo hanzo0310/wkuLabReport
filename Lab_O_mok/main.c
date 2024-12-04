@@ -1,6 +1,6 @@
 #include "var.h"
-#include "rules.c"
-#include "screen.c"
+#include "rules.h"
+#include "screen.h"
 
 void main() {
 	printBoardWithHighlight(board, highlightPos, turn);
