@@ -46,3 +46,26 @@ int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player) 
 }
 
 
+// AI의 턴: 최적의 위치를 선택
+void aiTurn(int board[SIZE][SIZE], int* row, int* col) {
+    // 1. AI 승리 가능 위치 탐색
+    if (findBestMove(board, row, col, 2)) {
+        return;
+    }
+
+    // 2. 플레이어 방어 위치 탐색
+    if (findBestMove(board, row, col, 1)) {
+        return;
+    }
+
+    // 3. 임의로 빈 칸 선택 (기본 전략 없음)
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == 0) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
