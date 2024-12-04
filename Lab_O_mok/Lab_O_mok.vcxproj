@@ -130,6 +130,7 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AI.h" />
     <ClInclude Include="rules.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="var.h" />

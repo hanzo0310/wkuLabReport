@@ -1,4 +1,3 @@
-#pragma once
 #include "var.h"
 
 int countStones(int board[SIZE][SIZE], int row, int col, int dRow, int dCol, int player) {
@@ -18,7 +17,8 @@ int countStones(int board[SIZE][SIZE], int row, int col, int dRow, int dCol, int
     return count;
 }
 
-int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player) {
+// 돌을 배치할 최적의 위치를 탐색
+int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player, int targetCount) {
     int directions[4][2] = {
         {0, 1},  // 가로
         {1, 0},  // 세로
@@ -33,10 +33,10 @@ int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player) 
                     int count = countStones(board, i, j, directions[d][0], directions[d][1], player) +
                         countStones(board, i, j, -directions[d][0], -directions[d][1], player);
 
-                    if (count >= 4) { // 승리 또는 방어 가능
+                    if (count >= targetCount - 1) { // 목표 돌 개수 이상 충족
                         *bestRow = i;
                         *bestCol = j;
-                        return 1;
+                        return 1; // 최적의 위치 발견
                     }
                 }
             }
@@ -45,21 +45,88 @@ int findBestMove(int board[SIZE][SIZE], int* bestRow, int* bestCol, int player) 
     return 0;
 }
 
+// AI의 턴: 우선순위에 따라 동작
+void placeFirstMoveNearPlayer(int board[SIZE][SIZE], int playerRow, int playerCol, int* aiRow, int* aiCol) {
+    int directions[4][2] = {
+        {0, 1},  // 오른쪽
+        {1, 0},  // 아래
+        {0, -1}, // 왼쪽
+        {-1, 0}  // 위
+    };
 
-// AI의 턴: 최적의 위치를 선택
-void aiTurn(int board[SIZE][SIZE], int* row, int* col) {
-    // 1. AI 승리 가능 위치 탐색
-    if (findBestMove(board, row, col, 2)) {
+    for (int d = 0; d < 4; d++) {
+        int newRow = playerRow + directions[d][0];
+        int newCol = playerCol + directions[d][1];
+
+        if (newRow >= 0 && newRow < SIZE && newCol >= 0 && newCol < SIZE && board[newRow][newCol] == 0) {
+            *aiRow = newRow;
+            *aiCol = newCol;
+            return;
+        }
+    }
+}
+
+// AI의 턴
+void aiTurn(int board[SIZE][SIZE], int* row, int* col, int isFirstMove, int lastPlayerRow, int lastPlayerCol) {
+    if (isFirstMove && lastPlayerRow != -1 && lastPlayerCol != -1) {
+        // AI의 첫 번째 수: 플레이어 주변에 돌을 둠
+        placeFirstMoveNearPlayer(board, lastPlayerRow, lastPlayerCol, row, col);
         return;
     }
 
-    // 2. 플레이어 방어 위치 탐색
-    if (findBestMove(board, row, col, 1)) {
+    // 기존 AI 로직: 우선순위에 따라 동작
+    if (findBestMove(board, row, col, 1, 4)) { // 방어
         return;
     }
 
-    // 3. 임의로 빈 칸 선택 (기본 전략 없음)
+    if (findBestMove(board, row, col, 2, 4)) { // 공격
+        return;
+    }
+
+    for (int i = 0; i < SIZE; i++) { // 근접 배치
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == 2) {
+                int directions[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+                for (int d = 0; d < 4; d++) {
+                    int newRow = i + directions[d][0];
+                    int newCol = j + directions[d][1];
+                    if (newRow >= 0 && newRow < SIZE && newCol >= 0 && newCol < SIZE && board[newRow][newCol] == 0) {
+                        *row = newRow;
+                        *col = newCol;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    int minDist = SIZE * SIZE, bestR = -1, bestC = -1; // 최소 거리 배치
     for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == 0) {
+                for (int r = 0; r < SIZE; r++) {
+                    for (int c = 0; c < SIZE; c++) {
+                        if (board[r][c] == 2) {
+                            int dist = abs(r - i) + abs(c - j);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                bestR = i;
+                                bestC = j;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (bestR != -1 && bestC != -1) {
+        *row = bestR;
+        *col = bestC;
+        return;
+    }
+
+    for (int i = 0; i < SIZE; i++) { // 랜덤 배치
         for (int j = 0; j < SIZE; j++) {
             if (board[i][j] == 0) {
                 *row = i;
